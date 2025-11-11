@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PKGINFO
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data files (large processed files)
+data/processed/*.csv
+data/processed/*.npy
+
+# Keep the raw data but ignore if too large
+# Uncomment if raw data files are too large:
+# data/*.dat
+
+# Model files (can be large)
+reports/svd_predictions.npy
+reports/pmf_predictions.npy
+reports/svd_model/*.npy
+reports/pmf_factors/*.npy
+
+# Keep metrics and plots
+!reports/model_metrics.json
+!reports/*.png
+
+# Environment
+.env
+.envrc
+
+# OS
+Thumbs.db
