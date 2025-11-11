@@ -2,4 +2,6 @@
 Matrix Factorization Models for Recommender System.
 """
 
-__all__ = []
+from .svd_model import SVDModel, save_metrics
+
+__all__ = ['SVDModel', 'save_metrics']

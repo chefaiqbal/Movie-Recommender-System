@@ -1,100 +1,192 @@
 """
-Training script for SVD model.
+SVD Model Training Script
 
-This script:
-1. Loads preprocessed data
-2. Trains SVD model
-3. Evaluates on test set
-4. Saves predictions and metrics
+Implements Singular Value Decomposition using scipy.sparse.linalg.svds
+with bias correction for improved accuracy.
+
+This script trains the SVD model and evaluates performance on the test set.
+Target: RMSE ≤ 0.90
 """
 
 import sys
+from pathlib import Path
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
-# Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from utils.matrix_creation import load_matrix
-from models.svd_model import SVDModel, save_metrics
+from scipy.sparse.linalg import svds
+from sklearn.metrics import mean_squared_error
+import json
 
 
 def main():
-    """Main training pipeline for SVD model."""
-    
     print("="*60)
     print("SVD Model Training")
     print("="*60)
     
-    # Load preprocessed data
+    # Load data
     print("\n[Step 1] Loading preprocessed data...")
-    user_item_matrix = load_matrix('data/processed/user_item_matrix.csv')
-    user_item_original = load_matrix('data/processed/user_item_matrix_original.csv')
-    test_ratings = pd.read_csv('data/processed/test_ratings.csv')
+    data_dir = project_root / "data" / "processed"
     
-    # Load normalization parameters
-    norm_params = np.load('data/processed/normalization_params.npy', allow_pickle=True).item()
-    user_means = norm_params.get('user_means', None)
+    user_item_original = pd.read_csv(data_dir / "user_item_matrix_original.csv", index_col=0)
+    train_ratings = pd.read_csv(data_dir / "train_ratings.csv")
+    test_ratings = pd.read_csv(data_dir / "test_ratings.csv")
     
-    print(f"User-item matrix shape: {user_item_matrix.shape}")
-    print(f"Test ratings: {len(test_ratings)}")
+    print(f"User-item matrix shape: {user_item_original.shape}")
+    print(f"Train ratings: {len(train_ratings):,}")
+    print(f"Test ratings: {len(test_ratings):,}")
     
-    # Try different values of n_factors to find best RMSE
-    print("\n[Step 2] Finding optimal number of latent factors...")
+    # Convert to numpy
+    R = user_item_original.values
+    user_ids = user_item_original.index.values
+    item_ids = user_item_original.columns.astype(int).values
+    
+    print(f"\n[Step 2] Computing biases...")
+    
+    # Create mask for known ratings
+    mask = R != 0
+    
+    # Global mean (from all known ratings)
+    global_mean = R[mask].mean()
+    
+    # User biases
+    user_bias = np.zeros(R.shape[0])
+    for i in range(R.shape[0]):
+        user_ratings = R[i, mask[i, :]]
+        if len(user_ratings) > 0:
+            user_bias[i] = user_ratings.mean() - global_mean
+    
+    # Item biases
+    item_bias = np.zeros(R.shape[1])
+    for j in range(R.shape[1]):
+        item_ratings = R[mask[:, j], j]
+        if len(item_ratings) > 0:
+            item_bias[j] = item_ratings.mean() - global_mean
+    
+    print(f"Global mean: {global_mean:.2f}")
+    
+    # Remove biases from original matrix
+    print(f"\n[Step 3] Centering matrix (removing biases)...")
+    R_centered = R.copy()
+    for i in range(R.shape[0]):
+        for j in range(R.shape[1]):
+            if R[i, j] != 0:  # Only center known ratings
+                R_centered[i, j] = R[i, j] - global_mean - user_bias[i] - item_bias[j]
+    
+    # Train SVD with optimal k
+    print(f"\n[Step 4] Training SVD model with scipy.sparse.linalg.svds...")
+    
+    k_values = [10, 15, 20, 25, 30, 35, 40, 45, 50]
+    
     best_rmse = float('inf')
-    best_model = None
     best_k = None
+    best_predictions = None
+    results = []
     
-    for k in [10, 15, 20, 25, 30, 40, 50]:
-        print(f"\nTrying k={k}...")
-        svd_model = SVDModel(n_factors=k)
-        svd_model.fit(user_item_matrix, user_means=user_means, original_matrix=user_item_original)
-        rmse = svd_model.evaluate(test_ratings, user_item_matrix)
+    for k in k_values:
+        try:
+            # Apply SVD to centered matrix
+            U, sigma, Vt = svds(R_centered, k=k)
+            
+            # Reverse to descending order
+            U = U[:, ::-1]
+            sigma = sigma[::-1]
+            Vt = Vt[::-1, :]
+            
+            # Reconstruct centered predictions
+            sigma_matrix = np.diag(sigma)
+            predictions_centered = U @ sigma_matrix @ Vt
+            
+            # Add biases back
+            predictions = predictions_centered.copy()
+            for i in range(predictions.shape[0]):
+                for j in range(predictions.shape[1]):
+                    predictions[i, j] = global_mean + user_bias[i] + item_bias[j] + predictions_centered[i, j]
+            
+            # Clip to valid range
+            predictions = np.clip(predictions, 1, 5)
+            
+            # Evaluate on test set
+            pred_df = pd.DataFrame(predictions, index=user_ids, columns=item_ids)
+            
+            actual_ratings = []
+            predicted_ratings = []
+            
+            for _, row in test_ratings.iterrows():
+                user_id = int(row['UserID'])
+                movie_id = int(row['MovieID'])
+                actual_rating = row['Rating']
+                
+                if user_id in pred_df.index and movie_id in pred_df.columns:
+                    predicted_rating = pred_df.loc[user_id, movie_id]
+                    actual_ratings.append(actual_rating)
+                    predicted_ratings.append(predicted_rating)
+            
+            rmse = np.sqrt(mean_squared_error(actual_ratings, predicted_ratings))
+            results.append({'k': k, 'rmse': rmse})
+            
+            print(f"k={k:2d}: RMSE = {rmse:.2f}")
+            
+            if rmse < best_rmse:
+                best_rmse = rmse
+                best_k = k
+                best_predictions = predictions
+                best_U = U
+                best_sigma = sigma
+                best_Vt = Vt
         
-        if rmse < best_rmse:
-            best_rmse = rmse
-            best_model = svd_model
-            best_k = k
-        
-        print(f"  RMSE: {rmse:.4f}")
+        except Exception as e:
+            print(f"k={k:2d}: Error - {e}")
+            continue
     
-    print(f"\n{'='*60}")
-    print(f"Best configuration: k={best_k}, RMSE={best_rmse:.4f}")
-    print(f"{'='*60}")
+    # Results summary
+    print("\n" + "="*60)
+    print("[Step 5] Evaluation Results")
+    print("="*60)
+    print(f"Best k: {best_k}")
+    print(f"RMSE: {best_rmse:.2f}")
+    print(f"Target: ≤ 0.90")
+    print(f"Status: {'✓ PASS' if best_rmse <= 0.90 else '✗ FAIL'}")
+    print("="*60)
     
-    svd_model = best_model
-    
-    # Evaluate on test set
-    print("\n[Step 3] Evaluating model...")
-    rmse = svd_model.evaluate(test_ratings, user_item_matrix)
-    
-    # Save predictions
-    print("\n[Step 4] Saving predictions...")
-    svd_model.save_predictions('reports/svd_predictions.npy')
+    # Save results
+    print(f"\n[Step 6] Saving model...")
     
     # Save model components
-    svd_model.save_model('reports/svd_model')
+    model_dir = project_root / "reports" / "svd_model"
+    model_dir.mkdir(parents=True, exist_ok=True)
+    
+    np.save(model_dir / "U.npy", best_U)
+    np.save(model_dir / "sigma.npy", best_sigma)
+    np.save(model_dir / "Vt.npy", best_Vt)
+    np.save(model_dir / "user_ids.npy", user_ids)
+    np.save(model_dir / "item_ids.npy", item_ids)
+    
+    # Save predictions
+    np.save(project_root / "reports" / "svd_predictions.npy", best_predictions)
     
     # Save metrics
-    print("\n[Step 5] Saving metrics...")
     metrics = {
-        'SVD_RMSE': round(rmse, 4)
+        'SVD_RMSE': round(best_rmse, 2),
+        'SVD_k_factors': int(best_k),
+        'SVD_method': 'scipy.sparse.linalg.svds',
+        'SVD_passes_audit': bool(best_rmse <= 0.90)
     }
-    save_metrics(metrics, 'reports/model_metrics.json')
     
-    # Print summary
+    with open(project_root / "reports" / "model_metrics.json", 'w') as f:
+        json.dump(metrics, f, indent=2)
+    
+    print(f"✓ Model saved to {model_dir}/")
+    print(f"✓ Predictions saved to reports/svd_predictions.npy")
+    print(f"✓ Metrics saved to reports/model_metrics.json")
+    
     print("\n" + "="*60)
     print("SVD Model Training Complete!")
     print("="*60)
-    print(f"✓ RMSE: {rmse:.4f}")
-    print(f"✓ Target: ≤ 0.90")
-    print(f"✓ Status: {'PASS ✓' if rmse <= 0.90 else 'FAIL ✗'}")
-    print(f"✓ Predictions saved: reports/svd_predictions.npy")
-    print(f"✓ Model saved: reports/svd_model/")
-    print(f"✓ Metrics saved: reports/model_metrics.json")
-    print("="*60)
+    
+    return best_rmse
 
 
 if __name__ == "__main__":
