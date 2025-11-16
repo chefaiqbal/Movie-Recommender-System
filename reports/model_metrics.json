@@ -1,5 +1,7 @@
 {
   "SVD_RMSE": 0.9,
+  "SVD_k_factors": 35,
+  "SVD_method": "scipy.sparse.linalg.svds",
   "SVD_passes_audit": true,
   "PMF_RMSE": 0.85,
   "PMF_passes_audit": false,
