@@ -1,0 +1,11 @@
+Rank,MovieID,Title,Genres,PredictedRating
+1,858,"Godfather, The (1972)",Action|Crime|Drama,5.0
+2,1221,"Godfather: Part II, The (1974)",Action|Crime|Drama,4.876744546531123
+3,608,Fargo (1996),Crime|Drama|Thriller,4.865854562819631
+4,904,Rear Window (1954),Mystery|Thriller,4.857940204505552
+5,296,Pulp Fiction (1994),Crime|Drama,4.856145289388597
+6,1212,"Third Man, The (1949)",Mystery|Thriller,4.829987778037397
+7,2905,Sanjuro (1962),Action|Adventure,4.824386570587511
+8,3022,"General, The (1927)",Comedy,4.822859552371458
+9,3245,I Am Cuba (Soy Cuba/Ya Kuba) (1964),Drama,4.812053566694155
+10,1250,"Bridge on the River Kwai, The (1957)",Drama|War,4.794800198315591

@@ -1,0 +1,11 @@
+Rank,MovieID,Title,Genres,PredictedRating
+1,904,Rear Window (1954),Mystery|Thriller,4.616324800064925
+2,2905,Sanjuro (1962),Action|Adventure,4.588194569669209
+3,1272,Patton (1970),Drama|War,4.562667536845163
+4,1099,"Christmas Carol, A (1938)",Drama,4.558003483041341
+5,3140,"Three Ages, The (1923)",Comedy,4.540949153511902
+6,318,"Shawshank Redemption, The (1994)",Drama,4.537851983907276
+7,1250,"Bridge on the River Kwai, The (1957)",Drama|War,4.532957289400637
+8,1262,"Great Escape, The (1963)",Adventure|War,4.526268041866246
+9,3245,I Am Cuba (Soy Cuba/Ya Kuba) (1964),Drama,4.514573731904461
+10,1219,Psycho (1960),Horror|Thriller,4.513872634447856
