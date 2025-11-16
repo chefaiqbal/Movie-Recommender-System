@@ -1,7 +1,7 @@
 {
   "SVD_RMSE": 0.9,
   "SVD_passes_audit": true,
-  "PMF_RMSE": 0.86,
+  "PMF_RMSE": 0.85,
   "PMF_passes_audit": false,
-  "improvement_%": 5.05
+  "improvement_%": 5.53
 }

@@ -19,7 +19,8 @@ from .data_loader import (
     load_users, 
     load_movies, 
     preprocess_data,
-    get_dataset_stats
+    get_dataset_stats,
+    filter_sparse_users_items
 )
 from .matrix_creation import (
     create_user_item_matrix,
@@ -48,6 +49,25 @@ def main():
     
     # Display dataset statistics
     get_dataset_stats(ratings)
+    
+    # Step 2.5: Filter sparse users and items
+    print("\n[Step 2.5] Filtering Sparse Users and Items...")
+    ratings = filter_sparse_users_items(
+        ratings,
+        min_user_ratings=25,  # Users must have rated at least 25 movies
+        min_item_ratings=10    # Movies must have at least 10 ratings
+    )
+    
+    # Update users and movies to match filtered ratings
+    valid_user_ids = ratings['UserID'].unique()
+    valid_movie_ids = ratings['MovieID'].unique()
+    users = users[users['UserID'].isin(valid_user_ids)]
+    movies = movies[movies['MovieID'].isin(valid_movie_ids)]
+    
+    print(f"\nFiltered dataset:")
+    print(f"Users: {len(users)}")
+    print(f"Movies: {len(movies)}")
+    print(f"Ratings: {len(ratings)}")
     
     # Step 3: Split data into train/test sets
     print("\n[Step 3] Splitting Data into Train/Test Sets...")

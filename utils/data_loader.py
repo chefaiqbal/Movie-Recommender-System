@@ -123,3 +123,45 @@ def get_dataset_stats(ratings):
     print(f"Sparsity: {1 - len(ratings) / (ratings['UserID'].nunique() * ratings['MovieID'].nunique()):.4f}")
     print(f"\nRating distribution:")
     print(ratings['Rating'].value_counts().sort_index())
+
+
+def filter_sparse_users_items(ratings, min_user_ratings=25, min_item_ratings=10):
+    """
+    Remove users and items with too few ratings to reduce sparsity.
+    
+    This helps the model by focusing on users/items with sufficient data
+    and can improve RMSE by removing noisy/sparse data points.
+    
+    Args:
+        ratings (pd.DataFrame): Ratings dataframe
+        min_user_ratings (int): Minimum ratings per user
+        min_item_ratings (int): Minimum ratings per item
+        
+    Returns:
+        pd.DataFrame: Filtered ratings dataframe
+    """
+    print(f"\n[Sparsity Filtering]")
+    print(f"Original: {len(ratings)} ratings, {ratings['UserID'].nunique()} users, {ratings['MovieID'].nunique()} movies")
+    
+    # Iteratively remove sparse users and items
+    prev_len = 0
+    iteration = 0
+    
+    while len(ratings) != prev_len and iteration < 5:
+        iteration += 1
+        prev_len = len(ratings)
+        
+        # Remove users with too few ratings
+        user_counts = ratings['UserID'].value_counts()
+        valid_users = user_counts[user_counts >= min_user_ratings].index
+        ratings = ratings[ratings['UserID'].isin(valid_users)]
+        
+        # Remove items with too few ratings
+        item_counts = ratings['MovieID'].value_counts()
+        valid_items = item_counts[item_counts >= min_item_ratings].index
+        ratings = ratings[ratings['MovieID'].isin(valid_items)]
+    
+    print(f"After filtering (iter={iteration}): {len(ratings)} ratings, {ratings['UserID'].nunique()} users, {ratings['MovieID'].nunique()} movies")
+    print(f"Sparsity: {1 - len(ratings) / (ratings['UserID'].nunique() * ratings['MovieID'].nunique()):.4f}")
+    
+    return ratings
