@@ -2,8 +2,6 @@
 
 A movie recommendation system using **Matrix Factorization** (SVD & PMF) enhanced with demographic features on the MovieLens 1M dataset.
 
-**Achievement:** PMF with demographics **RMSE = 0.85** ✅ (5.53% improvement over SVD)
-
 **Achievement:** PMF with demographics **RMSE = 0.85** ✅ (5.05% improvement over SVD)
 
 ---
@@ -71,39 +69,6 @@ Open browser to **http://localhost:8501**
 - 🧹 **Sparsity filtering**: Removed noisy users/items
 - 🎯 **Bias correction**: Global, user, and item biases
 - 📉 **Early stopping**: Optimal performance at epoch 53
-
----
-
-## 📁 Project Structure
-
-```
-matrix-factorization/
-├── data/
-│   ├── ratings.dat, movies.dat, users.dat    # Raw MovieLens data
-│   └── processed/                             # Preprocessed matrices
-├── models/
-│   ├── svd_model.py                          # SVD implementation
-│   └── pmf_with_bias.py                      # PMF with demographics
-├── scripts/
-│   ├── train_svd.py                          # Train SVD
-│   ├── train_pmf_bias.py                     # Train PMF
-│   └── generate_visualizations.py            # Create plots
-├── utils/
-│   ├── data_loader.py                        # Load/preprocess data
-│   ├── feature_engineering.py                # Demographic features
-│   ├── matrix_creation.py                    # Matrix operations
-│   ├── preprocess.py                         # Main preprocessing
-│   └── recommendation.py                     # Recommendation API
-├── reports/
-│   ├── model_metrics.json                    # Performance metrics
-│   ├── pmf_convergence.png                   # Training progress
-│   ├── svd_model/, pmf_model/                # Saved models
-│   └── *.png                                 # Visualizations
-├── notebooks/
-│   └── Movie_Recommender_System.ipynb        # Analysis notebook
-├── app.py                                     # Streamlit dashboard
-└── environment.yml                            # Conda environment
-```
 
 ---
 
@@ -234,191 +199,9 @@ This project is licensed under the MIT License.
 
 ---
 
-## 🚀 Live Demo
-
-### Quick Start with Streamlit
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/matrix-factorization.git
-cd matrix-factorization
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Launch the dashboard
-streamlit run app.py
-```
-
-🌐 **Open your browser to `http://localhost:8501`**
-
-<div align="center">
-  <img src="https://img.shields.io/badge/Try%20it%20now-Interactive%20Dashboard-success?style=for-the-badge" alt="Try Demo">
-</div>
-
 ---
 
-## 📦 Installation
-
-### Option 1: Using Conda (Recommended)
-
-```bash
-# Create environment
-conda env create -f environment.yml
-
-# Activate environment
-conda activate mf_env
-```
-
-### Option 2: Using pip
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### Requirements
-- Python 3.11+
-- NumPy, Pandas, SciPy
-- Scikit-learn
-- Matplotlib, Seaborn
-- Streamlit
-- Jupyter Notebook
-
----
-
-## 💻 Usage
-
-### 1. Generate Recommendations (Python API)
-
-```python
-from utils.recommendation import RecommendationSystem
-
-# Initialize the system
-rec_system = RecommendationSystem()
-
-# Get PMF recommendations for user 42
-recommendations = rec_system.generate_recommendations(
-    user_id=42, 
-    model='pmf',  # or 'svd'
-    top_n=10
-)
-
-print(recommendations[['Title', 'Genres', 'PredictedRating']])
-```
-
-**Output:**
-```
-                                    Title                    Genres  PredictedRating
-0                    The Shawshank Redemption                     Drama              4.89
-1                              The Godfather             Crime|Drama              4.85
-2                            Schindler's List                Drama|War              4.82
-...
-```
-
-### 2. Compare Models
-
-```python
-# Get side-by-side comparison
-comparison = rec_system.compare_models(user_id=42, top_n=10)
-
-print("User's Top Rated:")
-print(comparison['top_rated'])
-
-print("\nSVD Recommendations:")
-print(comparison['svd'])
-
-print("\nPMF Recommendations:")
-print(comparison['pmf'])
-```
-
-### 3. View User Profile
-
-```python
-# Get user's rating history
-top_movies = rec_system.get_top_rated_movies(user_id=42, top_n=20)
-print(f"User 42 has rated {len(top_movies)} movies")
-print(f"Average rating: {top_movies['Rating'].mean():.2f} ⭐")
-```
-
-### 4. Export Recommendations
-
-```python
-# Save recommendations to CSV
-rec_system.save_user_recommendations(
-    user_id=42,
-    model='pmf',
-    top_n=50,
-    output_dir='reports'
-)
-# Saves to: reports/user_42_recommendations.csv
-```
-
----
-
-## 🎓 Model Training
-
-### Train SVD Model
-
-```bash
-python scripts/train_svd.py
-```
-
-**What it does:**
-- Loads preprocessed user-item matrix
-- Applies bias correction (user + item biases)
-- Performs Singular Value Decomposition
-- Evaluates on test set
-- Saves model components to `reports/svd_model/`
-
-### Train PMF Model
-
-```bash
-python scripts/train_pmf_bias.py
-```
-
-**What it does:**
-- Initializes latent factor matrices
-- Iteratively optimizes with gradient descent
-- Monitors validation performance
-- Applies early stopping (stops at best epoch)
-- Saves model to `reports/pmf_model/`
-
-### Generate Visualizations
-
-```bash
-python scripts/generate_visualizations.py
-```
-
-**Creates:**
-- 📊 `predicted_vs_actual.png` - Prediction accuracy scatter plots
-- 📈 `rmse_comparison.png` - Model performance comparison
-- 🎬 `user_comparison.png` - User-specific recommendations
-- 🏆 `top_recommendations.png` - Most popular recommendations
-
----
-
-## 📊 Dataset
-
-<div align="center">
-
-| Statistic | Value |
-|-----------|-------|
-| **Total Ratings** | 1,000,209 |
-| **Users** | 6,040 |
-| **Movies** | 3,683 |
-| **Rating Scale** | 1-5 stars |
-| **Density** | ~4.36% |
-| **Train/Test Split** | 80% / 20% |
-
-</div>
-
-**Source:** [MovieLens 1M Dataset](https://grouplens.org/datasets/movielens/1m/)  
-**Citation:** F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens Datasets: History and Context. ACM Transactions on Interactive Intelligent Systems (TiiS) 5, 4: 19:1–19:19.
-
----
-
-## 🏗️ Project Structure
+## 🏗️ Detailed Project Structure
 
 ```
 matrix-factorization/
@@ -449,14 +232,6 @@ matrix-factorization/
 │   ├── matrix_creation.py                # Matrix preprocessing
 │   └── recommendation.py                 # Recommendation API
 │
-├── 📁 reports/
-│   ├── model_metrics.json                # Performance metrics
-│   ├── 📊 predicted_vs_actual.png        # Accuracy visualization
-│   ├── 📈 rmse_comparison.png            # Model comparison
-│   ├── 🎬 user_comparison.png            # User recommendations
-│   ├── 🏆 top_recommendations.png        # Popular movies
-│   ├── 📉 pmf_convergence.png            # Training progress
-│   ├── 📁 svd_model/                     # SVD components (U, Σ, V^T)
 │   ├── 📁 pmf_model/                     # PMF components (U, V, biases)
 │   └── 📁 pmf_factors/                   # Latent factors
 │
@@ -703,33 +478,6 @@ plt.savefig('reports/custom_analysis.png', dpi=300, bbox_inches='tight')
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Here are some ways you can help:
-
-- 🐛 **Report Bugs**: Open an issue describing the problem
-- ✨ **Suggest Features**: Propose new features or improvements
-- 📝 **Improve Documentation**: Fix typos, add examples, clarify explanations
-- 🔧 **Submit Pull Requests**: Implement new features or fix bugs
-
-### Development Setup
-
-```bash
-# Fork and clone the repository
-git clone https://github.com/yourusername/matrix-factorization.git
-cd matrix-factorization
-
-# Create a new branch
-git checkout -b feature/your-feature-name
-
-# Make your changes and test
-python -m pytest tests/
-
-# Submit a pull request
-```
-
----
-
 ## 📚 Resources & References
 
 ### Academic Papers
@@ -751,20 +499,6 @@ python -m pytest tests/
 - [LightFM](https://github.com/lyst/lightfm) - Hybrid recommendation algorithms
 - [Implicit](https://github.com/benfred/implicit) - Fast collaborative filtering
 
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👤 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your Name](https://linkedin.com/in/yourprofile)
-- Portfolio: [yourwebsite.com](https://yourwebsite.com)
 
 ---
 
@@ -773,15 +507,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **GroupLens Research**: For providing the MovieLens dataset
 - **MovieLens Community**: For rating movies and making this research possible
 - **Open Source Community**: For the amazing libraries that made this project possible
-
----
-
-<div align="center">
-
-### 🌟 If you found this project helpful, please consider giving it a star! 🌟
-
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/matrix-factorization?style=social)](https://github.com/yourusername/matrix-factorization/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/matrix-factorization?style=social)](https://github.com/yourusername/matrix-factorization/network/members)
 
 ---
 
