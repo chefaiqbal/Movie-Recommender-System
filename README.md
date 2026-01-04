@@ -145,18 +145,7 @@ Where:
 
 F. Maxwell Harper and Joseph A. Konstan. 2015. **The MovieLens Datasets: History and Context.** *ACM Transactions on Interactive Intelligent Systems (TiiS)* 5, 4, Article 19 (December 2015), 19 pages. DOI: [http://dx.doi.org/10.1145/2827872](http://dx.doi.org/10.1145/2827872)
 
-### Additional Resources
-
-- [MovieLens Dataset](https://grouplens.org/datasets/movielens/)
-- [GroupLens Research Project](http://www.grouplens.org/)
-- [Matrix Factorization Techniques (Koren 2009)](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
-- [Probabilistic Matrix Factorization (Salakhutdinov & Mnih 2008)](https://papers.nips.cc/paper/2007/file/d7322ed717dedf1eb4e6e52a37ea7bcd-Paper.pdf)
-
 ---
-
-## 📝 License
-
-This project is licensed under the MIT License.
 
 **Dataset License:** The MovieLens 1M dataset is provided by GroupLens Research at the University of Minnesota for research purposes. Users must acknowledge the dataset in publications and may not redistribute without permission. See [data/readme_data.md](data/readme_data.md) for full terms.
 
@@ -483,7 +472,6 @@ plt.savefig('reports/custom_analysis.png', dpi=300, bbox_inches='tight')
 ### Academic Papers
 - **SVD for Collaborative Filtering**: [Koren, Bell, & Volinsky (2009)](https://datajobs.com/data-science-repo/Recommender-Systems-[Netflix].pdf)
 - **Probabilistic Matrix Factorization**: [Salakhutdinov & Mnih (2008)](https://papers.nips.cc/paper/2007/file/d7322ed717dedf1eb4e6e52a37ea7bcd-Paper.pdf)
-- **Matrix Factorization Techniques**: [Koren (2010)](https://www.diva-portal.org/smash/get/diva2:633561/FULLTEXT01.pdf)
 
 ### Documentation
 - [Scikit-learn Matrix Decomposition](https://scikit-learn.org/stable/modules/decomposition.html)
@@ -493,12 +481,6 @@ plt.savefig('reports/custom_analysis.png', dpi=300, bbox_inches='tight')
 ### Datasets
 - [MovieLens Official Website](https://grouplens.org/datasets/movielens/)
 - [MovieLens 1M Dataset Paper](https://dl.acm.org/doi/10.1145/2827872)
-
-### Related Projects
-- [Surprise Library](http://surpriselib.com/) - Scikit for recommendation systems
-- [LightFM](https://github.com/lyst/lightfm) - Hybrid recommendation algorithms
-- [Implicit](https://github.com/benfred/implicit) - Fast collaborative filtering
-
 
 ---
 
