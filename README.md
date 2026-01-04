@@ -65,14 +65,14 @@ Open browser to **http://localhost:8501**
 
 ### Key Features:
 - ✨ **Demographic bias**: Age, gender, occupation patterns
-- � **Genre preferences**: Age-genre and occupation-genre affinity
+- 📚 **Genre preferences**: Age-genre and occupation-genre affinity
 - 🧹 **Sparsity filtering**: Removed noisy users/items
 - 🎯 **Bias correction**: Global, user, and item biases
 - 📉 **Early stopping**: Optimal performance at epoch 53
 
 ---
 
-## � Usage Examples
+##  Usage Examples
 
 ### Python API
 
@@ -375,23 +375,6 @@ pmf_model = fit_pmf(R_train, k=50, epochs=100, early_stopping=True)
 </div>
 
 ---
-
-## 🔍 Use Cases
-
-### For Movie Enthusiasts
-- 🎯 **Discover Hidden Gems**: Find movies you'll love but haven't heard of
-- 📊 **Personalized Lists**: Get recommendations tailored to your taste
-- 🎬 **Genre Exploration**: Explore new genres based on your preferences
-
-### For Developers
-- 🔧 **API Integration**: Use the recommendation engine in your applications
-- 📚 **Learning Resource**: Study production-ready recommender system code
-- 🎓 **Portfolio Project**: Showcase ML engineering skills
-
-### For Data Scientists
-- 📊 **Benchmark Dataset**: MovieLens 1M is industry-standard
-- 🧪 **Algorithm Comparison**: Compare different matrix factorization approaches
-- 📈 **Experimentation**: Try new features, models, or optimization techniques
 
 ---
 
